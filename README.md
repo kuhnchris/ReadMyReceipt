@@ -1,6 +1,6 @@
-#ReadMyReceipt
+# ReadMyReceipt
  
-######*(...or Receipe, since I'm a derp and can't write english good.)*
+###### *(...or Receipe, since I'm a derp and can't write english good.)*
 ```¯\_(ツ)_/¯```
 
 ## Install / Usage / Start
