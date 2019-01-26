@@ -1,0 +1,8 @@
+{% load static %}
+<div id="images">
+    {% for img in images %}
+    <div id="image">
+        <img src="{{img.image}}">
+    </div>
+    {% endfor %}
+</div>

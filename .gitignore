@@ -1,0 +1,6 @@
+.idea
+venv
+rmr/media/upload
+rmr/db.sqlite3
+**/__pycache__
+rmr/static
