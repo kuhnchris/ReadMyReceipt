@@ -1,4 +1,4 @@
-{% load static sub random %}
+{% load static sub random calcTransformScale %}
 <html>
 <head>
     <style>
@@ -38,29 +38,35 @@
     </style>
 </head>
 <body>
-<div class="lower" style="opacity: 0.25;">
-    <img src="{{ imgobj.image.url }}">
-</div>
-<div class="overlay">
-    {% for box in boxes %}
-        <div class="overlay"
-             style="left: {{ box.startPointX }};
-                    top: {{ box.startPointY }};
-                    width: {{ box.endPointX|sub:box.startPointX }};
-                    height: {{ box.endPointY|sub:box.startPointY }};
-                    background: rgba({% random_int 0 255 %},{% random_int 0 255 %},{% random_int 0 255 %}, .25);
-                    font-size: 16px;
-                    content-align: center;
-                    text-align: center;
+<!--style="transform:scale({{ imgobj.image|calcTransformScale:200 }})"-->
+<div>
+    <div class="lower" style="opacity: 0.25;">
+        <img src="{{ imgobj.image.url }}">
+    </div>
+    <div class="overlay">
+        {% for box in boxes %}
+            <div class="overlay"
+                 style="left: {{ box.startPointX }};
+                        top: {{ box.startPointY }};
+                        width: {{ box.endPointX|sub:box.startPointX }};
+                        height: {{ box.endPointY|sub:box.startPointY }};
+                        background: rgba({% random_int 0 255 %},{% random_int 0 255 %},{% random_int 0 255 %}, .25);
+                        font-size: 16px;
+                        content-align: center;
+                        text-align: center;
+                        z-index: {{ imgobj.image|calcTransformScale:200 }}
 
-                    ">
-            <div class="tooltip">
-                <span class="tooltiptext">{{box.content}}</span>
+                        ">
+                <div class="tooltip">
+                    <span class="tooltiptext">{{box.content}}</span>
+                </div>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
 </div>
-<div style="position: absolute; left: {{ imgobj.image.width }}"><img src="{{ imgobj.image.url }}"></div>
+<div style="position: absolute; left: {{ imgobj.image.width }};">
+    <div><img src="{{ imgobj.image.url }}"></div>
+</div>
 
 </body>
 </html>

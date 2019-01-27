@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from rmr_app.views import enter_view, upload_view, show_image_overlay
+from rmr_app.views import enter_view, upload_view, show_image_overlay, images_view, force_OCR
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -23,5 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('upload-target', upload_view),
     path('overlay/<id>', show_image_overlay),
+    path('images/', images_view),
+    path('forceOCR/<id>', force_OCR),
     re_path('^$',enter_view)
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

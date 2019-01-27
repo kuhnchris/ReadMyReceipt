@@ -2,6 +2,7 @@ import sys
 import pyocr
 import pyocr.builders
 
+import rmr_app.utils as util
 from PIL import Image
 from django.core.management.base import BaseCommand, CommandError
 from rmr_app.models import UploadFile, OCRBox, OCRTask
@@ -9,23 +10,12 @@ from rmr_app.models import UploadFile, OCRBox, OCRTask
 class Command(BaseCommand):
     help = 'Executes an OCR job on the oldest database entry'
 
-    def prepareOCR(self):
-        tools = pyocr.get_available_tools()
-        if len(tools) == 0:
-            print("No OCR tool found")
-            sys.exit(1)
-        # The tools are returned in the recommended order of usage
-        self.tool = tools[0]
-        print("Will use tool '%s'" % (self.tool.get_name()))
-        # Ex: Will use tool 'libtesseract'
-
-        langs = self.tool.get_available_languages()
-        print("Available languages: %s" % ", ".join(langs))
-        self.lang = langs[0]
-        # print("Will use lang '%s'" % (self.lang))
-
     def parseBox(self, sourceFile, MyBox, ParentBox, entry):
-        print(f'found box - {MyBox.content}')
+        print(f'found box @ {MyBox.position} content: {MyBox.content}')
+        if MyBox.content == "":
+            print(f'ignore empty box.')
+            return
+
         boxObj = OCRBox.objects.create(file=sourceFile,
                                        task=entry,
                                        parentBox=ParentBox,
@@ -36,7 +26,7 @@ class Command(BaseCommand):
                                        content=MyBox.content
                                       )
 
-        if hasattr(MyBox,'word_boxes'):
+        if hasattr(MyBox,'word_boxes') and entry.extended_resolve is True:
             for box in MyBox.word_boxes:
                 self.parseBox(sourceFile, box, boxObj, entry)
 
@@ -51,16 +41,17 @@ class Command(BaseCommand):
         entry.save()
 
         print("preparing OCR tool")
-        self.prepareOCR()
+        self.tool, self.lang = util.prepareOCR()
         if not self.tool:
             return "error preparing OCR tool"
 
-        print("OCRing...")
-        line_and_word_boxes = self.tool.image_to_string(
-            Image.open(entry.file.image.path),
-            builder=pyocr.builders.LineBoxBuilder(),
-            lang='deu'
-        )
+        if entry.advanced_OCR:
+            print("(advanced) OCRing...")
+            line_and_word_boxes = util.cleanAndParseImage(self.tool, entry.file.image.path)
+        else:
+            print("(simple) OCRing...")
+            line_and_word_boxes = util.simpleOCR(self.tool,entry)
+
 
         print("parsing and writing to database...")
         for box in line_and_word_boxes:

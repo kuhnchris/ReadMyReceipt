@@ -1,8 +1,8 @@
 {% load static %}
-<div id="images">
+<div id="images" style="display: flex">
     {% for img in images %}
-    <div id="image">
-        <img src="{{img.image}}">
+    <div id="image" >
+        <a href="/overlay/{{img.pk}}"><img src="{{img.image.url}}" style="max-width: 200px; max-height: 200px" ></a>
     </div>
     {% endfor %}
 </div>

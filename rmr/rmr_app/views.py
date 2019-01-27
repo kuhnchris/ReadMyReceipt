@@ -8,7 +8,7 @@ def enter_view(request):
 
 def images_view(request):
     x = { 'images': UploadFile.objects.all() }
-    return render(request,"rmr_app/images.html")
+    return render(request,"rmr_app/images.html",x)
 
 def upload_view(request):
     x = {}
@@ -28,7 +28,11 @@ def show_image_overlay(request, id):
     if not imgobj:
         raise Http404()
 
-    boxes = OCRBox.objects.filter(file=imgobj,parentBox__isnull=False).all()
+    boxes = OCRBox.objects.filter(file=imgobj).all()
     print(boxes)
 
     return render(request,'rmr_app/overlay.html', {'boxes': boxes, 'imgobj': imgobj})
+
+def force_OCR(request, id):
+    import rmr_app.management.commands.doOCR.Command as OCRcmd
+    OCRcmd.handle()
