@@ -1,4 +1,4 @@
-Django==2.1.5
+Django==2.1.6
 Pillow==5.4.1
 pyocr==0.5.3
 pytz==2018.9
